@@ -1,0 +1,7 @@
+- name: Add default Route for R1
+  hosts: R1
+  tasks:
+    - name: Configure default route
+      ios_command:
+        commands:
+          - 'ip route 0.0.0.0 0.0.0.0 192.168.0.5'
