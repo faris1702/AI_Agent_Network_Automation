@@ -1,6 +1,7 @@
 <h1>Prerequisites</h1>
 
 1. GNS3 with Cisco images that support SSH<br>
+	- Full setup here: https://github.com/faris1702/GNS3-Setup-with-Cisco-Images
 2. VirtualBox with Ubuntu VM installed <br>
 3. VSCode <br>
 4. LLM API Key (I will be using OpenAI)<br>
