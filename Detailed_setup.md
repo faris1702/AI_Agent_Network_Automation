@@ -38,7 +38,7 @@ Or Control Panel > Network & Sharing Center > Change adapter settings <br>
 ![lo_8](images/loopback/lo_8.png)
 ![lo_9](images/loopback/lo_9.png)
 
-8. Can now ping the IP you set (10.0.21.3 in this case) from cmd and "ipconfig" should show this network adapter <br>
+8. Can now ping the IP you set (10.0.21.4 in this case) from cmd and "ipconfig" should show this network adapter <br>
 ![lo_10](images/loopback/lo_10.png) <br>
 ![lo_11](images/loopback/lo_11.png)
 <br><br>
@@ -467,9 +467,9 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
 4. Test Ansible commands to all the devices
 
     ```
-    ansible 10.0.11.3 -m -raw -a 'sh ip int br' -u user -k -i hosts.ini
-    ansible 192.168.0.4 -m -raw -a 'sh ip int br' -u user -k -i hosts.ini
-    ansible 172.16.0.6  -m -raw -a 'sh ip int br' -u user -k -i hosts.ini
+    ansible 10.0.11.3 -m raw -a 'sh ip int br' -u user -k -i hosts.ini
+    ansible 192.168.0.4 -m raw -a 'sh ip int br' -u user -k -i hosts.ini
+    ansible 172.16.0.6  -m raw -a 'sh ip int br' -u user -k -i hosts.ini
     ```
     The output should be similar to the picture below
     ![ans_1](images/ansible/ans_1.png)
