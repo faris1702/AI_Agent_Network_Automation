@@ -12,34 +12,34 @@
 <h1>Microsoft KM-TEST Loopback Adapter Setup</h1>
 This is setup to be able to SSH to the Ubuntu VM to make things easy when need to copy into the Ubuntu VM. Possible to do the project without this part, but will be more troublesome
 
-1. Device Manager > Click on your laptop hostname
+1. Device Manager > Click on your laptop hostname<br>
 ![lo_1](images/loopback/lo_1.png)
 
-2. Action > Add legacy hardware 
+2. Action > Add legacy hardware <br>
 ![lo_2](images/loopback/lo_2.png)
 
-3. Install the hardware that I manually select from a list (Advanced)
+3. Install the hardware that I manually select from a list (Advanced) <br>
 ![lo_3](images/loopback/lo_3.png)
 
-4. Network adapters
+4. Network adapters <br>
 ![lo_4](images/loopback/lo_4.png)
 
-5. Microsoft > Microsoft KM-TEST Loopback Adapter > Next
+5. Microsoft > Microsoft KM-TEST Loopback Adapter > Next <br>
 ![lo_5](images/loopback/lo_5.png)
 
-6. The loopback interface is now added. Can view in device manager > network adapters
+6. The loopback interface is now added. Can view in device manager > network adapters <br>
 ![lo_6](images/loopback/lo_6.png) <br>
-Or Control Panel > Network & Sharing Center > Change adapter settings
+Or Control Panel > Network & Sharing Center > Change adapter settings <br>
 ![lo_7](images/loopback/lo_7.png)
 
 7. Go to Control Panel > Network & Sharing Center > Change adapter settings > Select the loopback interface > Properties > Networking > IPv4 <br>
     - IP Address: 10.0.21.4
-    - Subnet Mask: 255.255.255.0
+    - Subnet Mask: 255.255.255.0 <br>
 ![lo_8](images/loopback/lo_8.png)
 ![lo_9](images/loopback/lo_9.png)
 
-8. Can now ping the IP you set (10.0.21.3 in this case) from cmd and "ipconfig" should show this network adapter
-![lo_10](images/loopback/lo_10.png)
+8. Can now ping the IP you set (10.0.21.3 in this case) from cmd and "ipconfig" should show this network adapter <br>
+![lo_10](images/loopback/lo_10.png) <br>
 ![lo_11](images/loopback/lo_11.png)
 <br><br>
 
