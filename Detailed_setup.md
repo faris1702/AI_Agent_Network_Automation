@@ -319,12 +319,11 @@ One of the features of this project is that the AI agent will be abe to capture 
    	```
 	which tcpdump
     ```
-    Should give an output like `/usr/bin/tcpdump`
+    Should give an output like `/usr/bin/tcpdump` <br>
     2. Access `visudo`
-
-        ```
-        nano visudo
-        ```
+		```
+		nano visudo
+		```
     3. Go to the last line and add
 
         ```
