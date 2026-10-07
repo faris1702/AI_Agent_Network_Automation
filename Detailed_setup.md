@@ -318,10 +318,11 @@ One of the features of this project is that the AI agent will be abe to capture 
       
     1. Check the path of `tcpdump` using
        
-   	```
-	which tcpdump
-    ```
-    Should give an output like `/usr/bin/tcpdump` <br>
+        ```
+        which tcpdump
+        ```
+        Should give an output like `/usr/bin/tcpdump` <br>
+
     2. Access `visudo`
        
 		```
