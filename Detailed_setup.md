@@ -315,7 +315,10 @@ One of the features of this project is that the AI agent will be abe to capture 
     ```
 3. Remove the password request when running `tcpdump` commands
     - Prevents error when the AI Agent runs this function
-    1. Check the path of `tcpdump` using `which tcpdump`<br>
+    1. Check the path of `tcpdump` using
+   	```
+	which tcpdump
+    ```
     Should give an output like `/usr/bin/tcpdump`
     2. Access `visudo`
 
