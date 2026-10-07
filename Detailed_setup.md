@@ -197,13 +197,13 @@ This is to allow traffic between GNS3, Microsoft KM-TEST Loopback Adapter, Ubunt
     - `enp0s8`: Adapter 2 (Internal Network - Connected to GNS3)
     - `enp0s9`: Adapter 3 (Loopback Adapter - SSH from local device to VM)
 4. Click on the gear icon and set the following for these devices
-    - `enp0s8`
+    - `enp0s8` (Internal Network)
         - IPv4 Method: `Manual`
-        - IP address: `10.0.11.2`
+        - IP address: `10.0.11.2` (Same subnet as R1 G2/0)
         - Netmask: `255.255.255.0`
-    - `enp0s9`
+    - `enp0s9` (Loopback Adapter)
         - IPv4 Method: `Manual`
-        - IP address: `10.0.21.6`
+        - IP address: `10.0.21.6` (Same subnet as Microsoft Loopback Adapter)
         - Netmask: `255.255.255.0`
     - Save the settings
 5. Open cmd and test ping to R1
