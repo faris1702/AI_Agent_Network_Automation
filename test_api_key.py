@@ -11,7 +11,7 @@ client = OpenAI(api_key=api_key)
 
 try:
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5.4-mini",
         messages=[{"role": "user", "content": "I am testing if the API key works"}]
     )
     print("Success! Response:", response.choices[0].message.content)
