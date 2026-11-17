@@ -1,0 +1,5 @@
+The network architecture consists of 3 cisco devices.
+2 routers (R1 and R2) and 1 layer 3 switch (SW1).
+
+R2 has only 1 connection and it is connected to R1.
+SW1 has only 1 connection and it is connected to R1.
