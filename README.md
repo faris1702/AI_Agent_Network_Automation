@@ -4,8 +4,9 @@ An AI agent that helps manage a simulated Cisco network using plain-English inst
 
 The network is simulated in **GNS3**. The agent runs on an **Ubuntu VM** in **Oracle VirtualBox**, which connects to the GNS3 network over a VirtualBox internal network.
 
-**Demo video:** [https://www.youtube.com/watch?v=SQOBbE-cZoo](https://www.youtube.com/watch?v=SQOBbE-cZoo)
-            <br>[https://www.youtube.com/watch?v=ls9ItnTJ2VA](https://www.youtube.com/watch?v=ls9ItnTJ2VA)
+**Demo video:** 
+<br>[https://www.youtube.com/watch?v=SQOBbE-cZoo](https://www.youtube.com/watch?v=SQOBbE-cZoo)
+<br>[https://www.youtube.com/watch?v=ls9ItnTJ2VA](https://www.youtube.com/watch?v=ls9ItnTJ2VA)
 
 **Setup guide:** [Detailed_setup.md](https://github.com/faris1702/AI_Agent_Network_Automation/blob/main/Detailed_setup.md)
 
