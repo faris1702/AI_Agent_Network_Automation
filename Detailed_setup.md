@@ -607,6 +607,12 @@ Copy the contents into the files.
     nano packet_capture_tools.py
     ```
 
+3. Create a python file named `system_prompt_1.py`. This will be the system prompt for the AI agent. It is `1` because there is another system prompt with more features.<br>
+Copy the contents from the repository into the file.
+    ```
+    nano system_prompt_1.py
+    ```
+
 
 
 
@@ -616,4 +622,4 @@ Copy the contents into the files.
 
 <h1>The setup is complete</h1>
 
-You can now copy `ai_agent_8.py` from the repo into the Ubuntu VM and run it. It should work without issue.
+You can now copy `ai_agent_6_segmented.py` from the repo into the Ubuntu VM and run it. It should work without issue.
