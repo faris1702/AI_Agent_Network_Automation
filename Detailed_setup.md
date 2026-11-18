@@ -480,8 +480,8 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ```
    The output should be similar to the picture below
     ![ans_1](images/ansible/ans_1.png)
-6. If Step 4 works, it means that Ansible is working properly
-7. Modify `hosts.ini`
+5. If Step 4 works, it means that Ansible is working properly
+6. Modify `hosts.ini`
 
     ```
     nano hosts.ini
@@ -508,7 +508,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ansible_become=yes
     ansible_become_method=enable
     ```
-8. We will now create a new directory `host_vars` with subdirectories within it. This will store the network devices user and password information.<br>
+7. We will now create a new directory `host_vars` with subdirectories within it. This will store the network devices user and password information.<br>
 
     ```
     mkdir host_vars
@@ -528,7 +528,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
                └── SW1
                    └── vault.yaml
     ``` 
-9. <b>Optional</b>: Change the default editor from `vim` to `nano`. I did this as I was more comfortable with `nano`
+8. <b>Optional</b>: Change the default editor from `vim` to `nano`. I did this as I was more comfortable with `nano`
 
     ```
     nano /home/faris1702/.bashrc
@@ -548,7 +548,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ```
     source venv/bin/activate
     ```
-10. Create an Ansible Vault for each host directory
+9. Create an Ansible Vault for each host directory
 
     ```
     ansible-vault create host_vars/R1/vault.yaml
@@ -565,7 +565,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ansible_password: cisco123
     ansible_become_password: cisco123
     ```
-11. From the project directory `../AI_Agent_Network_Automation`, create `.ansible_vault_password`. This will allow Ansible to run commands without requesting for Ansible-Vault password.
+10. From the project directory `../AI_Agent_Network_Automation`, create `.ansible_vault_password`. This will allow Ansible to run commands without requesting for Ansible-Vault password.
 
     ```
     nano .ansible_vault_password
@@ -576,7 +576,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ```
     password
     ```
-12. Test if the setup was done correctly by running Ansible commands
+11. Test if the setup was done correctly by running Ansible commands
     ```
     ansible R1 -i hosts.ini \
     --vault-password-file .ansible_vault_password \
@@ -591,12 +591,21 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     -m cisco.ios.ios_command \
     -a "commands='show run'"
     ```
-13. Do step 11 for all the other hosts - `R2` and `SW1`
-14. Create a new file `documentation.txt` and copy the file contents from the repository. It is a short description of the network architecture for the LLM to understand
+12. Do step 11 for all the other hosts - `R2` and `SW1`
+
+<h1>File Setup</h1>
+
+1. Create a new file `documentation.txt` and copy the file contents from the repository. It is a short description of the network architecture for the LLM to understand
     ```
     nano documentation.txt
     ```
-<br><br>
+2. Create the following python files. These files contains the tools that will be used by the AI Agent.<br>
+The contents of the files can be found in the repository.<br>
+Copy the contents into the files.
+    ```
+    nano ansible_tools.py
+    nano packet_capture_tools.py
+    ```
 
 
 
