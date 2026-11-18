@@ -282,8 +282,8 @@ This is to allow traffic between GNS3, Microsoft KM-TEST Loopback Adapter, Ubunt
 16. Ping to `R2` and `SW1`
 
     ```
-    ping 192.168.0.4
-    ping 172.16.0.6
+    ping 192.168.0.4 -c 4
+    ping 172.16.0.6 -c 4
     ```
 17. SSH to all the devices
     - Password: `cisco123`
