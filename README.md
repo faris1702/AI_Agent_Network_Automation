@@ -32,6 +32,7 @@ The agent can capture traffic on the Ubuntu VM's network interfaces with `tcpdum
 
 ## Architecture
 
+![Overall Architecture](images/Overall_Architecture.png)
 ![Network Topology](images/gns3/gns3_2.png)
 
 | Component | Role |
