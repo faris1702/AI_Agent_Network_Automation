@@ -471,17 +471,17 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     172.16.0.6
     ```
 3. Activate your virtual environment if you have not
-4. Test Ansible commands to all the devices
+4. Test Ansible commands to all the devices. Password: `cisco123`
 
     ```
     ansible 10.0.11.3 -m raw -a 'sh ip int br' -u user -k -i hosts.ini
     ansible 192.168.0.4 -m raw -a 'sh ip int br' -u user -k -i hosts.ini
     ansible 172.16.0.6  -m raw -a 'sh ip int br' -u user -k -i hosts.ini
     ```
-    The output should be similar to the picture below
+   The output should be similar to the picture below
     ![ans_1](images/ansible/ans_1.png)
-5. If Step 4 works, it means that Ansible is working properly
-6. Modify `hosts.ini`
+6. If Step 4 works, it means that Ansible is working properly
+7. Modify `hosts.ini`
 
     ```
     nano hosts.ini
@@ -508,7 +508,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ansible_become=yes
     ansible_become_method=enable
     ```
-7. We will now create a new directory `host_vars` with subdirectories within it. This will store the network devices user and password information.<br>
+8. We will now create a new directory `host_vars` with subdirectories within it. This will store the network devices user and password information.<br>
 
     ```
     mkdir host_vars
@@ -528,7 +528,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
                └── SW1
                    └── vault.yaml
     ``` 
-8. <b>Optional</b>: Change the default editor from `vim` to `nano`. I did this as I was more comfortable with `nano`
+9. <b>Optional</b>: Change the default editor from `vim` to `nano`. I did this as I was more comfortable with `nano`
 
     ```
     nano /home/faris1702/.bashrc
@@ -548,7 +548,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ```
     source venv/bin/activate
     ```
-9. Create an Ansible Vault for each host directory
+10. Create an Ansible Vault for each host directory
 
     ```
     ansible-vault create host_vars/R1/vault.yaml
@@ -565,7 +565,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ansible_password: cisco123
     ansible_become_password: cisco123
     ```
-10. From the project directory `../AI_Agent_Network_Automation`, create `.ansible_vault_password`. This will allow Ansible to run commands without requesting for Ansible-Vault password.
+11. From the project directory `../AI_Agent_Network_Automation`, create `.ansible_vault_password`. This will allow Ansible to run commands without requesting for Ansible-Vault password.
 
     ```
     nano .ansible_vault_password
@@ -576,7 +576,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     ```
     password
     ```
-11. Test if the setup was done correctly by running Ansible commands
+12. Test if the setup was done correctly by running Ansible commands
     ```
     ansible R1 -i hosts.ini \
     --vault-password-file .ansible_vault_password \
@@ -591,7 +591,7 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     -m cisco.ios.ios_command \
     -a "commands='show run'"
     ```
-12. Do step 11 for all the other hosts - `R2` and `SW1`
+13. Do step 11 for all the other hosts - `R2` and `SW1`
 <br><br>
 
 
