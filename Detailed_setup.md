@@ -592,6 +592,10 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
     -a "commands='show run'"
     ```
 13. Do step 11 for all the other hosts - `R2` and `SW1`
+14. Create a new file `documentation.txt` and copy the file contents from the repository. It is a short description of the network architecture for the LLM to understand
+    ```
+    nano documentation.txt
+    ```
 <br><br>
 
 
@@ -603,4 +607,4 @@ For this section, we will be setting up Ansible on the Ubuntu VM. To make things
 
 <h1>The setup is complete</h1>
 
-You can now copy `ai_agent_5.py` from the repo into the Ubuntu VM and run it. It should work without issue.
+You can now copy `ai_agent_8.py` from the repo into the Ubuntu VM and run it. It should work without issue.
