@@ -14,7 +14,7 @@ import os
 import yaml
 from pathlib import Path
 
-from system_prompt import SYSTEM_PROMPT
+from system_prompt_2 import SYSTEM_PROMPT
 from tools.ansible_tools import (
     run_cisco_command,
     run_ping_command,
