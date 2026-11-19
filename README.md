@@ -1,4 +1,5 @@
 # AI Agent Network Automation
+<b>As of 19 Nov 2026, I am making improvements to this project and this readme is outdated. I will try to update it ASAP</b><br>
 
 An AI agent that helps manage a simulated Cisco network using plain-English instructions. The project focuses on using Ansible, so instead of writing out Ansible playbooks manually, we can automate it using an AI agent. It can read device configurations, write Ansible playbooks to change them (only after you approve), and capture and explain network traffic.
 
