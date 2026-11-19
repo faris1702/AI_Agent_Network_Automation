@@ -15,7 +15,7 @@ import yaml
 from pathlib import Path
 
 from system_prompt_1 import SYSTEM_PROMPT
-from ansible_tools import (
+from tools.ansible_tools import (
     run_cisco_command,
     run_ping_command,
     backup_cisco_config,
@@ -27,7 +27,7 @@ from ansible_tools import (
     delete_script
 )
 
-from packet_capture_tools import (
+from tools.packet_capture_tools import (
     check_network_interfaces,
     capture_packets,
     read_packet_capture
