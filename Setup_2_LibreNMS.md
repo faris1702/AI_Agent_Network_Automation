@@ -43,7 +43,7 @@ This is a continuation from the first setup.
 
 7. Add LibreNMS user
     ```
-    useradd librenms -d /opt/librenms -M -r -s "$(which bash)
+    useradd librenms -d /opt/librenms -M -r -s "$(which bash)"
     ```
 
 8. Download LibreNMS
@@ -55,11 +55,14 @@ This is a continuation from the first setup.
 9. Set permissions 
     ```
     chown -R librenms:librenms /opt/librenms
-
+    ```
+    ```
     chmod 771 /opt/librenms
-
+    ```
+    ```
     setfacl -d -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage/ 
-    
+    ```
+    ```
     setfacl -R -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage/
     ```
 
@@ -67,12 +70,14 @@ This is a continuation from the first setup.
 
 10. Change to LibreNMS user
     ```
-    su -librenms
+    su - librenms
     ```
 
 11. Run the composer wrapper script and go back to the root user
     ```
     ./scripts/composer_wrapper.php install --no-dev
+    ```
+    ```
     exit
     ```
     <b>Note:</b> Since the Ubuntu VM is using a proxy to access the Internet, this step may fail. If so, use the following steps:
@@ -189,11 +194,11 @@ This is a continuation from the first setup.
     ```
 
 25. Paste the following configuration into the file
-    - <b>Note:</b> `server_name` was originally `librenms.example.com` but I swapped it with my Ubuntu VM IP address `10.0.11.2`. I used the IP address that was connected to the Oracle VirtualBox Internal Network
+    - <b>Note:</b> `server_name` was originally `librenms.example.com` but I swapped it with my Ubuntu VM IP address `10.0.30.5`. I used the IP address that was connected to the Oracle VirtualBox Internal Network
     ```
     server {
      listen      80;
-     server_name 10.0.11.2;
+     server_name 10.0.30.5;
      root        /opt/librenms/html;
      index       index.php;
 
@@ -230,6 +235,8 @@ This is a continuation from the first setup.
 28. This feature lets you use the `tab` key to complete lnms commands. It works in the same way as for normal Linux
     ```
     ln -s /opt/librenms/lnms /usr/bin/lnms
+    ```
+    ```
     cp /opt/librenms/misc/lnms-completion.bash /etc/bash_completion.d/
     ```
 
@@ -309,12 +316,10 @@ We are now complete with the LibreNMS installation. There are a few more steps i
 
 <h2>LibreNMS GUI Setup</h2>
 
-41. Open the GUI for your Ubuntu VM
+41. Open a browser on your local host (e.g. Google Chrome)
 
-42. Open `Firefox` and key in the IP address mentioned in Step 25 `10.0.11.2`.<br>
-![firefox](images/librenms/firefox.png)
-You should see the following page:<br>
-![libre_7](images/librenms/libre_7.png)
+42. Key in the IP address mentioned in Step 25 `10.0.30.5` in the search bar. You should see the following page:<br>
+![google](images/librenms/google.png)
 
 43. Enter your username and password from Step 18 and click on `Check credentials`
 
@@ -350,10 +355,20 @@ So we now, we will be setting up SNMP on `R1`. If everything works, do the same 
 
 48. From R1's CLI, set the community string to that mentioned in Step 31 - `public` 
     ```
+    snmp-server community public RO
+    do write
+    ```
+    It should look like this:
+    ```
     R1(config)#snmp-server community public RO
+    R1(config)#do write
     ```
 
 49. Check if working
+    ```
+    do show running-config | include snmp-server
+    ```
+    It should look like this:
     ```
     R1(config)#do show running-config | include snmp-server
     ```
@@ -361,8 +376,8 @@ So we now, we will be setting up SNMP on `R1`. If everything works, do the same 
     
 50. Test if SNMP is working by running the following commands from the Ubuntu VM:
     ```
-    snmpget -v2c -c public 10.0.11.3 1.3.6.1.2.1.1.5.0
-    snmpwalk -v2c -c public 10.0.11.3 1.3.6.1.2.1.1
+    snmpget -v2c -c public 10.0.30.6 1.3.6.1.2.1.1.5.0
+    snmpwalk -v2c -c public 10.0.30.6 1.3.6.1.2.1.1
     ```
     The output should be as follows:<br>
     ![libre_13](images/librenms/libre_13.png)
@@ -370,7 +385,7 @@ So we now, we will be setting up SNMP on `R1`. If everything works, do the same 
 <h2>Add device to LibreNMS</h2>
 
 51. From the logged in page on LibreNMS webpage, select `Devices` > `Add device`
-    - `IP`: `10.0.11.3` (IP address of R1's port connected to Internal Network)
+    - `IP`: `10.0.30.6` (IP address of R1's port connected to Internal Network)
     ![libre_14](images/librenms/libre_14.png)
     - Under `Credentials`, select `Create New Secret`
     - Under `Community`, enter the community string used in Step 31 - `public` in this case
@@ -382,19 +397,25 @@ So we now, we will be setting up SNMP on `R1`. If everything works, do the same 
     
     - After a while, the IP address at the top left of the page will turn green
 
-53. Repeat Step 38 to Step 42 for `R2` and `SW1`
+53. Repeat Step 48 to Step 52 for `R2` and `SW1`
+    - For step 51, use `Use Existing Secret`<br>
+    ![cred_1](images/librenms/cred_1.png)<br>
+    ![cred_2](images/librenms/cred_2.png)<br>
 
 <h1>Setting up LibreNMS API Key</h1>
 Now we will setup an API key for LibreNMS so that we can run LibreNMS functions through Python code
 
 54. Go to `Settings` (Gear icon) > `Global Settings` > `API`
 
-55. Enable `API v1 (Beta)`
+55. Enable `API v1 (Beta)`<br>
+    ![api_1](images/librenms/api_1.png)
 
 56. Go to `Settings` (Gear icon at top right) > `API` > `API Tokens` > `Create API Access Token`
 ![libre_17](images/librenms/libre_17.png)
 
-57. Just key in a short description and click `Create API Token` 
+57. Key in the following fields
+    - `Description`: ai agent (or anything you want)
+    - `Expires in`: `Never`
 ![create_api_key](images/librenms/create_api_key.png)
 
 58. The token will be created. Save it as you will not be able to view the key again
@@ -430,6 +451,9 @@ For the following steps, SSH from your local machine (VSCode/putty/cmd) so that 
     ![libre_19](images/librenms/libre_19.png)
 
 64. Now, add your API key and URL to your `.env` file
+    ```
+    nano .env
+    ```
     ```
     OPENAI_API_KEY="<LLM_API_KEY>"
     LIBRENMS_API_KEY="<LIBRENMS_API_KEY>"
@@ -478,7 +502,7 @@ We will now integrate the LibreNMS tools into the AI Agent.
 
 72. Create `ai_agent_7_librenms.py` and copy the contents from this repository. This file is the main AI agent script.
     ```
-    nano ai_agent_7.py
+    nano ai_agent_7_librenms.py
     ```
 
 73. Run the script
@@ -488,4 +512,4 @@ We will now integrate the LibreNMS tools into the AI Agent.
     You are now running the AI agent. You can ask the agent questions regarding the network.
 
 <br>
-ThSis is the end of the setup. Thank you for reading.
+This is the end of the setup. Thank you for reading.
