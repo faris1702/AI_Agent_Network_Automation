@@ -1,39 +1,69 @@
 # AI Agent Network Automation
-<b>As of 19 Nov 2026, I am making improvements to this project and this readme is outdated. I will try to update it ASAP</b><br>
 
-An AI agent that helps manage a simulated Cisco network using plain-English instructions. The project focuses on using Ansible, so instead of writing out Ansible playbooks manually, we can automate it using an AI agent. It can read device configurations, write Ansible playbooks to change them (only after you approve), and capture and explain network traffic.
+An AI agent that monitors a simulated Cisco network and makes configuration changes from plain-English instructions. Instead of writing Ansible playbooks by hand, you tell the agent what you want and it does the work. The agent can look at the network freely, but it changes device configurations only after you explicitly approve.
 
-The network is simulated in **GNS3**. The agent runs on an **Ubuntu VM** in **Oracle VirtualBox**, which connects to the GNS3 network over a VirtualBox internal network.
+The network is simulated in **GNS3**. The agent runs on an **Ubuntu VM** in **Oracle VirtualBox**. Both connect to a **Microsoft KM-TEST Loopback Adapter** on the Windows 11 host, which lets the VM, the GNS3 devices and the host reach each other.
 
-**Demo video:** 
+The agent is built with **LangGraph** and **LangChain** and uses OpenAI's **GPT-5.4 Mini** model.
+
+**Demo videos:**
 <br>[https://www.youtube.com/watch?v=SQOBbE-cZoo](https://www.youtube.com/watch?v=SQOBbE-cZoo)
 <br>[https://www.youtube.com/watch?v=ls9ItnTJ2VA](https://www.youtube.com/watch?v=ls9ItnTJ2VA)
 
-**Setup guide:** [Detailed_setup.md](https://github.com/faris1702/AI_Agent_Network_Automation/blob/main/Detailed_setup.md)
+**Setup guides:**
+1. [Setup_1_GNS3_Ansible.md](Setup_1_GNS3_Ansible.md): GNS3, VirtualBox, Ubuntu VM, Ansible, packet capture and the basic AI agent
+2. [Setup_2_LibreNMS.md](Setup_2_LibreNMS.md): LibreNMS monitoring, the LibreNMS API and the full AI agent
 
 <br>
 
-## Features
+## What the Agent Does
 
-### 1. Read device configurations
-The agent can run `show` commands on the network devices (for example `show ip int br` or `show run`). It then reads the output and answers your questions about the network's current state.
+The agent has two main jobs:
+- **Monitor** the network and answer questions about its current state.
+- **Make configuration changes** when you ask for them.
 
-### 2. Change configurations with Ansible, only with your permission
-When you ask for a change, the agent writes an Ansible playbook to make it. **Nothing runs until you approve it:**
-- The agent shows you the playbook it wrote.
-- You review it and decide whether it is correct.
-- The playbook runs only after you give explicit permission.
+### Safe by design
 
-This keeps a person in control of every change and stops the agent from making changes you did not intend.
+The agent can plan and run commands that only **view** the network (`show` commands, pings, packet captures and LibreNMS queries) on its own.
 
-### 3. Capture and explain network traffic
-The agent can capture traffic on the Ubuntu VM's network interfaces with `tcpdump` and save it as a `.pcap` file. It then reads the capture and explains the traffic in plain language.
+Any command that **changes** a device's configuration needs your explicit confirmation:
+1. The agent writes an Ansible playbook for the change and checks that its YAML is valid.
+2. It shows you the playbook.
+3. It does a dry run (`ansible-playbook --check --diff`) and shows you exactly what would change on each device.
+4. You review the changes, and the playbook is applied only after you approve it at the prompt.
+
+This keeps a person in control of every change, so the network changes only in the ways you have approved.
+
+### Tools
+
+The agent has four groups of tools:
+
+#### 1. Read documentation
+The agent reads [documentation.txt](documentation.txt), a short description of the network, so it understands the topology before it acts.
+
+#### 2. Run Ansible commands
+Using Ansible over SSH, the agent can:
+- run `show` commands (for example `show ip int br` or `show run`) and explain the output
+- run pings from a device
+- back up running configurations to the `configs/` folder
+- write, validate and run playbooks for configuration changes, after you approve them (saved in `playbooks/`)
+
+#### 3. Run packet capture commands
+The agent captures traffic on the Ubuntu VM's network interfaces with `tcpdump` and saves it as a `.pcap` file in `packet_captures/`. It then reads the capture and explains the traffic in plain language.
+
+#### 4. Run LibreNMS tools (advanced setup)
+LibreNMS runs on the Ubuntu VM and polls the GNS3 devices over SNMP. Through the LibreNMS API, the agent can:
+- list the monitored devices
+- check device health, interfaces and availability
+- look up outages and active alerts
 
 <br>
 
-## Diagram
+## Architecture
 
-<h3>Tech Stack</h3>
+### Tech stack
+
+The **basic** setup is what you get by following [Setup_1_GNS3_Ansible.md](Setup_1_GNS3_Ansible.md) only. The **advanced** setup is what you get by continuing with [Setup_2_LibreNMS.md](Setup_2_LibreNMS.md).
 
 <b>Basic</b>
 
@@ -43,32 +73,39 @@ The agent can capture traffic on the Ubuntu VM's network interfaces with `tcpdum
 
 ![Full Architecture](images/Architecture/Full_Architecture_Image.png)
 
-<h3>Network</h3>
-
-![Network Architecture](images/Architecture/Network_Architecture_Image.png)
-![Network Topology](images/gns3/gns3_2.png)
-
 | Component | Role |
 |---|---|
-| **GNS3** | Simulates the network: Cisco C7200 routers and a C3725 EtherSwitch router |
-| **Oracle VirtualBox** | Hosts the Ubuntu VM |
-| **Ubuntu VM** | Runs the AI agent, Ansible and `tcpdump` |
-| **OpenAI API** | The language model behind the agent |
+| **Windows 11 host** | Runs VirtualBox, VSCode (Remote - SSH into the VM) and a browser for the LibreNMS web UI |
+| **Microsoft KM-TEST Loopback Adapter** | Host network adapter that connects the host, the Ubuntu VM and GNS3 (`10.0.30.0/24`) |
+| **Oracle VirtualBox** | Hosts the Ubuntu VM and the GNS3 VM |
+| **GNS3** | Simulates the network: Cisco C7200 routers (R1, R2) and a C3725 EtherSwitch router (SW1) |
+| **Ubuntu VM** | Runs the AI agent, Ansible, `tcpdump` and LibreNMS |
+| **LLM agent** (Python, LangGraph) | Decides which tools to call based on your request |
+| **OpenAI API** (GPT-5.4 Mini) | The language model behind the agent, reached over the VM's NAT adapter |
 | **Ansible** (`cisco.ios`) | Runs commands and pushes configuration to the devices over SSH |
 | **Ansible Vault** | Stores the device login details in encrypted files |
+| **LibreNMS** | Monitors the devices over SNMP v2c and exposes the data through its API (advanced setup) |
+
+### Network
+
+![Network Architecture](images/Architecture/Network_Architecture_Image.png)
+
+![Network Topology](images/gns3/gns3_2.png)
 
 ### IP addressing
 
 | Device | Interface | IP Address |
 |---|---|---|
-| Ubuntu VM | `enp0s8` (Internal Network to GNS3) | `10.0.11.2/24` |
-| R1 | `g2/0` | `10.0.11.3/24` |
-| R1 | `g1/0` | `192.168.0.3/24` |
-| R1 | `f0/0` | `172.16.0.5/24` |
-| R2 | `g1/0` | `192.168.0.4/24` |
-| SW1 | `vlan 1` | `172.16.0.6/24` |
+| Windows host | Microsoft KM-TEST Loopback Adapter | `10.0.30.4/24` |
+| Ubuntu VM | `enp0s8` (bridged to the Loopback Adapter) | `10.0.30.5/24` |
+| Ubuntu VM | `enp0s3` (NAT, Internet access) | DHCP |
+| R1 | `g1/0` (to Cloud1 / Loopback Adapter) | `10.0.30.6/24` |
+| R1 | `g2/0` | `192.168.0.6/24` |
+| R1 | `f0/0` | `172.16.0.6/24` |
+| R2 | `g1/0` | `192.168.0.5/24` |
+| SW1 | `vlan 1` (port `f1/0`) | `172.16.0.5/24` |
 
-R2 and SW1 use R1 as their default gateway. The Ubuntu VM reaches them through static routes via R1.
+R2 and SW1 use R1 as their default gateway. The Ubuntu VM reaches them through static routes via R1. The LibreNMS web UI is at `http://10.0.30.5` from the host.
 
 <br>
 
@@ -76,65 +113,90 @@ R2 and SW1 use R1 as their default gateway. The Ubuntu VM reaches them through s
 
 ```
 AI_Agent_Network_Automation
-├── ai_agent_0.py               # The AI agent
-├── ai_agent_1.py
-├── ai_agent_2.py
-├── ai_agent_3.py
-├── ai_agent_4.py
-├── ai_agent_5.py             # Full script, with output printed nicely
-├── test_api_key.py           # Script to test if API key is working
-├── configs/                  # Store the configurations of network devices
-├── playbooks/                # Store Ansible playbooks created by AI agent
-├── packet_captures/          # Store pcap files that the AI agent captured
-├── hosts.ini                 # Ansible inventory (R1, R2, SW1)
-├── host_vars/                # Encrypted device logins (Ansible Vault)
+├── ai_agent_6_segmented.py       # Basic AI agent (Ansible + packet capture tools)
+├── system_prompt_1.py            # System prompt for the basic agent
+├── ai_agent_7_librenms.py        # Full AI agent (Ansible + packet capture + LibreNMS tools)
+├── system_prompt_2.py            # System prompt for the full agent
+├── documentation.txt             # Network description the agent reads
+├── tools/
+│   ├── ansible_tools.py          # Run commands, ping, back up configs, write/validate/run playbooks
+│   ├── packet_capture_tools.py   # List interfaces, capture and read .pcap files
+│   ├── librenms_tools.py         # LibreNMS API: devices, health, interfaces, availability, outages, alerts
+│   └── test_librenms_tools.py    # Checks that every LibreNMS tool works
+├── test_api_key.py               # Checks that the OpenAI API key works
+├── test_librenms.py              # Checks that the LibreNMS API key works
+├── hosts.ini                     # Ansible inventory (R1, R2, SW1)
+├── host_vars/                    # Encrypted device logins (Ansible Vault)
 │   ├── R1/vault.yaml
 │   ├── R2/vault.yaml
 │   └── SW1/vault.yaml
-├── .env                      # OpenAI API key (not committed)
-├── .ansible_vault_password   # Vault password file (not committed)
-├── requirements.txt          # Python dependencies
-├── Detailed_setup.md         # Step-by-step setup guide
-└── images/                   # Screenshots used in the setup guide
+├── configs/                      # Device config backups (created by the agent)
+├── playbooks/                    # Ansible playbooks written by the agent
+├── packet_captures/              # .pcap files captured by the agent
+├── .env                          # API keys (not committed)
+├── .ansible_vault_password       # Vault password file (not committed)
+├── requirements.txt              # Python dependencies
+├── Setup_1_GNS3_Ansible.md       # Setup guide part 1
+├── Setup_2_LibreNMS.md           # Setup guide part 2
+├── Architecture/                 # draw.io source files for the diagrams
+└── images/                       # Diagrams and screenshots used in the guides
 ```
 
 <br>
 
 ## Prerequisites
 
-1. GNS3 with Cisco images that support SSH (IOU images do not support SSH)
+1. GNS3 with Cisco images that support SSH (IOU images do not support SSH). Setup guide: [GNS3-Setup-with-Cisco-Images](https://github.com/faris1702/GNS3-Setup-with-Cisco-Images)
 2. Oracle VirtualBox with an Ubuntu VM
 3. VSCode with the Remote - SSH extension (recommended)
-4. An LLM API key (this project uses OpenAI)
+4. An OpenAI API key
 
 <br>
 
 ## Quick Start
 
-The full setup is in [Detailed_setup.md](https://github.com/faris1702/AI_Agent_Network_Automation/blob/main/Detailed_setup.md). In short:
+The full steps are in the two setup guides. In short:
 
-1. Build the GNS3 topology, set up IP addressing and enable SSH on all devices.
-2. Configure the VirtualBox network adapters so the Ubuntu VM is connected to GNS3.
-3. On the Ubuntu VM, install Python, Ansible and `tcpdump`. Allow `tcpdump` to run with `sudo` without asking for a password.
-4. Create a Python virtual environment and install the dependencies:
+**Part 1: [Setup_1_GNS3_Ansible.md](Setup_1_GNS3_Ansible.md)**
+
+1. Add a Microsoft KM-TEST Loopback Adapter on Windows with IP `10.0.30.4/24` and allow ICMP through Windows Firewall.
+2. In VirtualBox, bridge an adapter on both the Ubuntu VM and the GNS3 VM to the Loopback Adapter.
+3. Build the GNS3 topology, set up IP addressing and default routes, and enable SSH on all devices.
+4. On the Ubuntu VM, set `enp0s8` to `10.0.30.5/24`, install SSH, `tcpdump`, Python and Ansible, and allow `tcpdump` to run with `sudo` without a password.
+5. Create a Python virtual environment and install the dependencies:
     ```
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
     ```
-5. Add your OpenAI API key to `.env`:
-    ```
-    OPENAI_API_KEY="<API_KEY>"
-    ```
 6. Set up the Ansible inventory (`hosts.ini`), the Vault files in `host_vars/`, and `.ansible_vault_password`.
 7. Add routes to the networks behind R1. This must be repeated every time the VM starts:
     ```
-    sudo ip route add 192.168.0.0/24 via 10.0.11.3 dev enp0s8
-    sudo ip route add 172.16.0.0/24 via 10.0.11.3 dev enp0s8
+    sudo ip route add 192.168.0.0/24 via 10.0.30.6 dev enp0s8
+    sudo ip route add 172.16.0.0/24 via 10.0.30.6 dev enp0s8
     ```
-8. Run the agent:
+8. Add your OpenAI key to `.env` (`OPENAI_API_KEY="<LLM_API_KEY>"`), then run the basic agent:
     ```
-    python3 ai_agent_5.py
+    python3 test_api_key.py
+    python3 ai_agent_6_segmented.py
+    ```
+
+**Part 2: [Setup_2_LibreNMS.md](Setup_2_LibreNMS.md)**
+
+9. Install LibreNMS on the Ubuntu VM (nginx, PHP-FPM, MariaDB, snmpd) and finish the web install at `http://10.0.30.5`.
+10. Enable SNMP on each device (`snmp-server community public RO`) and add R1, R2 and SW1 to LibreNMS.
+11. Enable the LibreNMS API and create an API token.
+12. Add the LibreNMS keys to `.env`:
+    ```
+    OPENAI_API_KEY="<LLM_API_KEY>"
+    LIBRENMS_API_KEY="<LIBRENMS_API_KEY>"
+    LIBRENMS_URL="http://127.0.0.1"
+    ```
+13. Test the setup and run the full agent:
+    ```
+    python3 test_librenms.py
+    python3 tools/test_librenms_tools.py
+    python3 ai_agent_7_librenms.py
     ```
 
 <br>
@@ -143,5 +205,8 @@ The full setup is in [Detailed_setup.md](https://github.com/faris1702/AI_Agent_N
 
 - *"Show me the interface status of R1."*
 - *"What is the IP address configured on SW1's VLAN 1?"*
+- *"Back up the running config of R2."*
 - *"Configure a loopback interface on R2 with IP 2.2.2.2/32."* → the agent writes a playbook and waits for your approval
 - *"Capture 20 packets on enp0s8 and explain what you see."*
+- *"Are there any active alerts on the network?"*
+- *"How healthy is SW1, and has it had any outages?"*
